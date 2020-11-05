@@ -2,41 +2,30 @@
     <div class="display-item">
         <HeaderTitle :title="title"/>
         <div class="box">
-                <div v-for="(item,index) in dataOjb" :key="index" class="box-item" >
-                    <img :src="item.picUrl || item.blurPicUrl || item.coverImgUrl" @click="toDetail(item.id)">
-                    <h3>{{item.name}}</h3>
-                    <p v-if="item.copywriter || item.updateFrequency">{{item.copywriter || item.updateFrequency}}</p>
-                </div>
+            <div v-for="(item,index) in dataOjb" :key="index" class="box-item">
+                <img :src="item.picUrl || item.blurPicUrl">
+                <h3>{{item.name}}</h3>
+                <p v-if="item.copywriter">{{item.copywriter}}</p>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import {mapState,mapActions} from 'vuex'
-import HeaderTitle from './HeaderTitle';
+import HeaderTitle from './HeaderTitle'
 export default {
-   
+    // props:{
+    //     title:{
+    //         type:String
+    //     },
+    //     dataOjb:{
+    //         type:Array
+    //     }
+    // },
     props:['title','dataOjb'],
-    
-    computed: {
-        ...mapState(['playList'])
-    },
-    methods:{
-        show(){
-            console.log(this.playList)
-        },
-        toDetail(id){
-            // console.log(id)
-            this.playlistDetail(id)
-            
-            this.$router.push({name:'SongList'})
-        },
-        ...mapActions(['playlistDetail'])
-    },
     components:{
         HeaderTitle
     }
-    
 }
 </script>
 
@@ -57,11 +46,12 @@ export default {
         align-content: space-between;
 
         .box-item{
-            width: 15%;
+            width: 23%;
             margin-top: 40px;
+
             img{
                 width: 100%;
-                border-radius: 20px;
+                border-radius: 50%;
                 transition: all .5s ease;
 
                 &:hover{
@@ -73,12 +63,14 @@ export default {
             h3{
                 margin-top: 5px;
                 font-weight: 600;
-                font-size: 14px;
-                line-height: 22px;
+                font-size: 16px;
+                line-height: 26px;
+
+                text-align: center;
             }
 
             p{
-                font-size: 10px;
+                font-size: 12px;
                 color:#333;
                 line-height: 14px;
             }

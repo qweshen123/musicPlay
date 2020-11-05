@@ -1,29 +1,36 @@
 <template>
   <div id="app">
-    <div class="header-nav">
-      <div class="box">
-        <div class="trun">
-          <div class="prev icon-xiangzuo trun-item" @click="toPrev"></div>
-          <div class="next icon-xiangyou trun-item" @click="toNext"></div>
+    <div class="header-nav container-fluid">
+        <div class="box row">
+          <div class="trun col-md-1 col-sm-2 col-xs-3">
+            <div class="prev icon-xiangzuo trun-item" @click="toPrev"></div>
+            <div class="next icon-xiangyou trun-item" @click="toNext"></div>
+          </div>
+          <div class="nav  col-md-6 col-sm-4 col-xs-9">
+            <!-- <button @click="show">点击</button> -->
+            <router-link to="/" class="item" :class="{con:isCon == 0}" @click.native="isCon = 0">主页</router-link>
+            <router-link to="/explore" class="item" :class="{con:isCon == 1}" @click.native="isCon = 1">发现</router-link>
+            <router-link to="/community" class="item" :class="{con:isCon == 2}" @click.native="isCon = 2">社区</router-link>
+          </div>
+          <div class="search  col-md-5 col-sm-6 hidden-xs">
+            <span class="icon-sousuo"></span>
+            <input type="text" v-model="keyWord">
+          </div>
         </div>
-        <div class="nav">
-          <!-- <button @click="show">点击</button> -->
-          <router-link to="/" class="item" :class="{con:isCon == 0}" @click.native="isCon = 0">主页</router-link>
-          <router-link to="/explore" class="item" :class="{con:isCon == 1}" @click.native="isCon = 1">探索</router-link>
-          <router-link to="/community" class="item" :class="{con:isCon == 2}" @click.native="isCon = 2">社区</router-link>
-        </div>
-        <div class="search">
-          <span class="icon-sousuo"></span>
-          <input type="text" v-model="keyWord">
-        </div>
-      </div>
     </div>
-    <router-view/>
+    <keep-alive>
+      <router-view @call="callBack"/>
+    </keep-alive>
+    <transition name="up"> 
+      <MusicPlayer ref='child'/>
+    </transition>
+
   </div>
 </template>
 
 <script>
 // import {mapActions,mapState} from 'vuex'
+import MusicPlayer from './components/MusicPlayer'
 export default {
   data(){
     return{
@@ -44,10 +51,16 @@ export default {
     toNext(){
       this.$router.go(1)
     },
+    callBack(){
+      this.$refs.child.changIndex()
+    }
     // ...mapActions(['dataMusic'])
   },
   mounted(){
     // this.dataMusic(15)
+  },
+  components:{
+    MusicPlayer
   }
 }
 </script>
@@ -63,14 +76,15 @@ export default {
       right: 0;
       top:0;
       height: 64px;
-      
-      background-color: rgba(255,255,255,.4);
+      padding: 0 155px;
+      background-color: rgba(255,255,255,.8);
+      // background-color: skyblue;
 
       .box{
         display: flex;
         align-items: center;
         height: 100%;
-        padding: 0 155px;
+        // padding: 0 155px;
       }
 
       .trun{
@@ -103,7 +117,7 @@ export default {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          left: 45px;
+          left: 50px;
         }
 
         input{
@@ -143,6 +157,21 @@ export default {
 
     }
 
+    .up-leave-to,
+    .up-enter{
+      transform: translateY(100%);
+    }
 
+    .up-enter-active,
+    .up-leave-active{
+      transition: all 1s ease;
+    }
+
+    .up-enter-to,
+    .up-leave{
+      transform: translateY(0);
+    }
+
+  
   }
 </style>

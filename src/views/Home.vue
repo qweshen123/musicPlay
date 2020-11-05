@@ -3,18 +3,23 @@
     
     <div class="carousel" ref="wrapper">
       <transition-group name="animate" tag="ul" class="box">
-        <li v-for="item in srcName" :key="item.id" v-show="conIndex == item.id"> 
-          <img :src='item.src'/> 
+        <li v-for="(item,index) in hostBanner" :key="'img:'+item.imageUrl" v-show="conIndex == index"> 
+          <img :src='item.imageUrl' /> 
         </li>
       </transition-group>
       <span class="icon-xiangzuo" @click="reduc"></span>
       <span class="icon-xiangyou" @click="add"></span>
       <div class="circle">
-        <div v-for="item in srcName" :key="item.id" class="item" :class="{con:conIndex == item.id}" @mouseover="conIndex = item.id"></div>
+        <div v-for="(item,index) in hostBanner" :key="item.imageUrl" class="item" :class="{con:conIndex == index}" @mouseover="conIndex = index"></div>
       </div>
     </div>
 
     <DisplayItem title="热门推荐" :dataOjb="recommend"/>
+    <!-- <NewSongdisplay title="新碟上架" :dataOjb="newSongs"/> -->
+    <DisplayItem title="最新专辑" :dataOjb="newest"/>
+    <!-- <DisplayItem title="推荐歌手" :dataOjb="hostArtists"/> -->
+    <DisplayItem title="榜单" :dataOjb="hdToplist"/>
+
     <br>
     <br>
     <br>
@@ -59,14 +64,17 @@
 </template>
 
 <script>
-import {mapActions,mapState} from 'vuex'
+import {mapActions,mapState,mapGetters} from 'vuex'
 import DisplayItem from '../components/DisplayItem'
+// import NewSongdisplay from '../components/NewSongdisplay'
 export default {
   components: {
-    DisplayItem
+    DisplayItem,
+
   },
   computed:{
-    ...mapState(['recommend'])
+    ...mapState(['recommend','newSongs','newest','hostArtists','hostTopList','hostBanner','playList']),
+    ...mapGetters(['hdToplist'])
   },
   data(){
     return{
@@ -77,7 +85,7 @@ export default {
         {id:4,src:require('../assets/images/轮播图4.jpg')},
         {id:5,src:require('../assets/images/轮播图5.jpg')},
       ],
-      conIndex:1
+      conIndex:0
     }
   },
   mounted(){
@@ -89,8 +97,8 @@ export default {
         // 启动自动轮播图
         this.timer = setInterval(() => {
           this.conIndex++
-          if(this.conIndex>5){
-            this.conIndex = 1
+          if(this.conIndex>this.hostBanner.length-1){
+            this.conIndex = 0
           }
         }, 4000);
 
@@ -104,14 +112,24 @@ export default {
           clearInterval(this.timer)
           this.timer = setInterval(() => {
             this.conIndex++
-            if(this.conIndex>5){
-              this.conIndex = 1
+            if(this.conIndex>this.hostBanner.length-1){
+              this.conIndex = 0
             }
           }, 4000);
         }
     });
 
-    this.dataMusic(12)
+    
+
+   
+  },
+  created(){
+    this.dataMusic(12);
+    this.newSong(12);
+    this.nest(12);
+    this.hostArtist(12);
+    this.topList(12);
+    this.banner();
   },
   beforeDestroy(){
     clearInterval(this.timer)
@@ -119,16 +137,16 @@ export default {
   methods:{
 
     reduc(){
-      if(this.conIndex == 1){
-        this.conIndex = this.srcName.length
+      if(this.conIndex == 0){
+        this.conIndex = this.hostBanner.length-1
       }else{
         this.conIndex--;
       }
     },
 
     add(){
-      if(this.conIndex == this.srcName.length){
-        this.conIndex = 1
+      if(this.conIndex == this.hostBanner.length-1){
+        this.conIndex = 0
       }else{
         this.conIndex++;
       }
@@ -138,7 +156,7 @@ export default {
       console.log(this.recommend)
     },
 
-    ...mapActions(['dataMusic'])
+    ...mapActions(['dataMusic','newSong','nest','hostArtist','topList','banner','playlistDetail'])
     
   }
 }
@@ -207,7 +225,7 @@ export default {
     }
 
     .circle{
-      width: 20%;
+      width: 30%;
       height: 30px;
       position: absolute;
       bottom: 40px;

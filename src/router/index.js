@@ -8,7 +8,8 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    props:true
   },
   {
     path: '/explore',
@@ -19,7 +20,16 @@ const routes = [
     path: '/community',
     name: 'Community',
     component: () => import('../views/Community.vue')
-  }
+  },
+
+  {
+    path: '/songlist',
+    name: 'SongList',
+    component: () => import('../views/SongList.vue')
+  },
+
+  
+  
 ]
 
 const router = new VueRouter({
