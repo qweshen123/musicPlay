@@ -14,8 +14,7 @@
         </div>
 
         <div class="list-items" v-if="playList">
-            <!-- <div class="items" v-for="(item,index) in playingList" :key="index" @dblclick="musicPlayer(item.id,allowList)" :class="{con:!isUse(item.id)}"> -->
-            <div class="items" v-for="(item,index) in playingList" :key="index" @dblclick="musicPlayer(item.id,playingList)">
+            <div class="items" v-for="(item,index) in playingList" :key="index" @dblclick="musicPlayer(item.id,allowList)" :class="{con:!isUse(item.id)}">
                 <img :src="item.al.picUrl">
                 <div class="detail">
                     <div class="author-song">
@@ -37,13 +36,13 @@ import {setminute} from '../assets/js/setminute'
 import {SET_EMPTY,SET_CURRSONG,SET_EMPTYSONGLIS,SET_PLAYINGTRACKS,SET_ISDONELIST} from '../store/mutation-types'
 export default {
     computed:{
-        // allowList(){
+        allowList(){
             
-        //     let arr = this.checkmusiclist.filter(item => {
-        //         return item.success
-        //     })
-        //     return arr
-        // },
+            let arr = this.checkmusiclist.filter(item => {
+                return item.success
+            })
+            return arr
+        },
         playingList(){
             if(this.playList.playlist.tracks.length>10){
                 return this.playList.playlist.tracks.slice(0,10)
@@ -51,12 +50,10 @@ export default {
             return this.playList.playlist.tracks
         },
         fistId(){
-            // return this.allowList[0].id
-            return this.playingList[0].id
+            return this.allowList[0].id
         },
         // playlist 歌单 
-        // ...mapState(['playList','checkmusiclist','songUrlDetail'])
-        ...mapState(['playList','songUrlDetail'])
+        ...mapState(['playList','checkmusiclist','songUrlDetail'])
     },
 
     data(){
@@ -83,29 +80,27 @@ export default {
             },1000)
         },
     
-        musicPlayer(currentId,playingList){
+        musicPlayer(currentId,allowList){
             if(!this.isOnLoading){
                 return
             }
-            // // 更改状态
-            // this.isdone(false)
+            
             // 添加到播放列表
             if(this.songUrlDetail.length == 0){
                 // 播放列表为空,添加歌单
-                this.songUrl(playingList)
-               
+                this.songUrl(allowList)
+                // 更改状态
+                this.isdone(false)
             }else{
-                // 如果歌单列表与播放列表相同不加载
+                // 如果允许播放列表与播放列表相同不加载
                 let songsLength = 0
                 for(let i = 0;i<this.songUrlDetail.length;i++){
-                    for(let j =0;j<playingList.length;j++){
-                        console.log(this.songUrlDetail)
-                        if(this.songUrlDetail[i].data.data[0].id == playingList[j].id){
+                    for(let j =0;j<this.allowList.length;j++){
+                        if(this.songUrlDetail[i].data.data[0].id == this.allowList[j].id){
                             songsLength++
                         }
                     }
                 }
-
                 if(songsLength == this.songUrlDetail.length){
                     // 没换歌单不刷新播放列表
                 }else{
@@ -115,12 +110,13 @@ export default {
                     this.emptySongList()
                     
                     // 添加新列表
-                    this.songUrl(playingList)
+                    this.songUrl(allowList)
 
+                    // 更改状态
+                    this.isdone(false)
                     
                 }
             }
-            
             // 更换当前播放歌曲
             this.curSong(currentId)
             this.playingCtracks(this.playingList)
@@ -146,7 +142,7 @@ export default {
             isdone:SET_ISDONELIST
         }),
 
-        ...mapActions(['songUrl'])
+        ...mapActions(['songUrl','checkMusic'])
     },
     filters:{
         setminute
