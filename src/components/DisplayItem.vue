@@ -23,10 +23,9 @@ export default {
     },
     methods:{
         show(){
-            console.log(this.playList)
         },
         toDetail(id){
-            // console.log(id)
+
             this.playlistDetail(id)
             
             this.$router.push({name:'SongList'})

@@ -79,7 +79,7 @@ export default {
             this.$emit('callHide')
         },
         show(){
-            console.log(123)
+
         },
         sendId(id){
             this.$emit('sendId',id)
@@ -98,7 +98,7 @@ export default {
                 }
             }
 
-            // console.log(123)
+
             // let topHeight = this.$refs.lyricBox.offsetHeight/2
             // this.$refs.songBox.style.top = (-(this.curentIndex/this.arr.length)*this.$refs.songBox.offsetHeight)+topHeight + 'px'
         },

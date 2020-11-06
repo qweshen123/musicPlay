@@ -1,7 +1,7 @@
 <template>
     <div class="song-list">
 
-        <div class="header" v-if="playList">
+        <div class="header" v-if="playList && playList!=404">
             <img  :src="playList.playlist.coverImgUrl" >
             <div class="content ">
                 <h2>{{playList.playlist.name}}</h2>
@@ -9,12 +9,12 @@
                     Playlist by {{playList.playlist.creator.nickname}}
                 </div>
                 <p class="descirbe">{{playList.playlist.description}}</p>
-                <button class="play" @click="musicPlayer(fistId,allowList)"><span class="icon-bofang"></span><span>播放</span></button>
+                <button class="play" @click="musicPlayer(fistId)"><span class="icon-bofang"></span><span>播放</span></button>
             </div>
         </div>
 
-        <div class="list-items" v-if="playList">
-            <div class="items" v-for="(item,index) in playingList" :key="index" @dblclick="musicPlayer(item.id,allowList)" :class="{con:!isUse(item.id)}">
+        <div class="list-items" v-if="playList && playList!=404">
+            <div class="items" v-for="(item,index) in playingList" :key="index" @dblclick="musicPlayer(item.id)" :class="{con:!isUse(item.id)}">
                 <img :src="item.al.picUrl">
                 <div class="detail">
                     <div class="author-song">
@@ -26,6 +26,9 @@
                 </div>
             </div>
         </div>
+
+        <div class="tisi" v-if="playList==false">版权问题，暂无数据</div>
+        <div class="tisi" v-if="playList==404">网络问题，暂无数据</div>
 
     </div>
 </template>
@@ -44,13 +47,30 @@ export default {
             return arr
         },
         playingList(){
-            if(this.playList.playlist.tracks.length>10){
-                return this.playList.playlist.tracks.slice(0,10)
+            if(this.playList){
+                if(this.playList.playlist.tracks.length>10){
+                    return this.playList.playlist.tracks.slice(0,10)
+                }
+                return this.playList.playlist.tracks
             }
-            return this.playList.playlist.tracks
+            return false
         },
         fistId(){
             return this.allowList[0].id
+        },
+        // 可以播放列表
+        allowSongList(){
+            let list = []
+            for(let i = 0;i<this.allowList.length;i++){
+                for(let j = 0;j<this.playingList.length;j++){
+                    // console.log(this.allowList[i])
+                    if(this.allowList[i].id == this.playingList[j].id){
+                        list.push(this.playingList[j])
+                        break
+                    }
+                }
+            }
+            return list
         },
         // playlist 歌单 
         ...mapState(['playList','checkmusiclist','songUrlDetail'])
@@ -80,46 +100,17 @@ export default {
             },1000)
         },
     
-        musicPlayer(currentId,allowList){
+        musicPlayer(currentId){
             if(!this.isOnLoading){
                 return
             }
             
-            // 添加到播放列表
-            if(this.songUrlDetail.length == 0){
-                // 播放列表为空,添加歌单
-                this.songUrl(allowList)
-                // 更改状态
-                this.isdone(false)
-            }else{
-                // 如果允许播放列表与播放列表相同不加载
-                let songsLength = 0
-                for(let i = 0;i<this.songUrlDetail.length;i++){
-                    for(let j =0;j<this.allowList.length;j++){
-                        if(this.songUrlDetail[i].data.data[0].id == this.allowList[j].id){
-                            songsLength++
-                        }
-                    }
-                }
-                if(songsLength == this.songUrlDetail.length){
-                    // 没换歌单不刷新播放列表
-                }else{
-                    
-                    // 换了歌单,刷新播放列表
-                    // 清空播放列表
-                    this.emptySongList()
-                    
-                    // 添加新列表
-                    this.songUrl(allowList)
+           
 
-                    // 更改状态
-                    this.isdone(false)
-                    
-                }
-            }
+
             // 更换当前播放歌曲
             this.curSong(currentId)
-            this.playingCtracks(this.playingList)
+            this.playingCtracks(this.allowSongList)
             this.$emit('call')
             
         },
@@ -211,6 +202,7 @@ export default {
                 width: 8vw;
                 height: 8vh;
                 border-radius: 10px;;
+                outline: none;
                 span{
                     display: inline-block;
                     color:#335eea;

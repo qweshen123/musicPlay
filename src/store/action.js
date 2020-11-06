@@ -78,32 +78,38 @@ export default{
         })
         .then(res => {
             let arrPrivileges
-            if(res.data.privileges.length>10){
 
-                arrPrivileges = res.data.privileges.slice(0,10)
+            if(res.data.privileges){
+                // console.log(res)
+                if(res.data.privileges.length>10){
+
+                    arrPrivileges = res.data.privileges.slice(0,10)
+                }else{
+                    arrPrivileges = res.data.privileges
+                }
+                context.commit(types.SET_PLAYLIST,res.data)
+                
+                for(let i = 0;i<arrPrivileges.length;i++){
+                    let id = arrPrivileges[i].id
+                    axios.get(api.API.api.checkMusic,{
+                            params:{
+                                id
+                            }
+                    })
+                    .then(() =>{
+                        context.commit(types.SET_CHECKMUSIC,{id,success:true})
+                    })
+                    .catch(() => {
+                        context.commit(types.SET_CHECKMUSIC,{id,success:false})
+                    })
+                }
             }else{
-                arrPrivileges = res.data.privileges
+                context.commit(types.SET_PLAYLIST,false)
             }
             
-            context.commit(types.SET_PLAYLIST,res.data)
-            
-            for(let i = 0;i<arrPrivileges.length;i++){
-                let id = arrPrivileges[i].id
-                axios.get(api.API.api.checkMusic,{
-                        params:{
-                            id
-                        }
-                })
-                .then(() =>{
-                    context.commit(types.SET_CHECKMUSIC,{id,success:true})
-                })
-                .catch(() => {
-                    context.commit(types.SET_CHECKMUSIC,{id,success:false})
-                })
-            }
            
         })
-        .catch(err => console.log(err))
+        .catch(() => context.commit(types.SET_PLAYLIST,404))
     },
 
     songUrl(context,allowList){

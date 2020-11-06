@@ -1,18 +1,22 @@
 <template>
-    <div class="music-player" v-if="songUrlDetail.length != 0">
-        <audio v-if="songUrl" :src="songUrl"  :ended="endMusic"  autoplay id="medicine" @ended="endSong" @timeupdate="getTime" ref='audioExample' class="audio"></audio>
+    <div class="music-player" >
+  
+        <audio v-if="songUrl" :src="songUrl"   autoplay id="medicine"  @timeupdate="getTime" @ended="endSong" ref='audioExample' class="audio"></audio>
         <div class="view-play">
-            <div class="song-detail" v-if="playingMassge">
-                <img :src="playingMassge.al.picUrl">
+            <div class="song-detail" v-if="singleSongDetail">
+                <img :src="singleSongDetail.al.picUrl">
                 <div class="detail">
-                    <div class="song-name">{{playingMassge.name}}</div>
-                    <div class="author-name">{{playingMassge.ar[0].name}}</div>                        
+                    <div class="song-name">{{singleSongDetail.name}}</div>
+                    <div class="author-name">{{singleSongDetail.ar[0].name}}</div>                        
                 </div>
             </div>
 
             <div class="conrcle">
+
                 <span class="prev icon-shangyishou" @click="prev"></span>
-                <span class="play" @click="play" :class="isPlay?'icon-bofang':'icon-bofang1'"></span>
+
+                <span class="play"  :class="isPlay?'icon-bofang':'icon-bofang1'" @click="play"></span>
+
                 <span class="next icon-xiayishou" @click="next"></span>
             </div>
 
@@ -40,10 +44,10 @@
                     </div>
                 </div>
                 <div class="mark" v-if="isYinMark" @mousemove="pressMoveYin" @mouseup="pressUpYin" @mouseleave="pressUpYin"></div>
-                <!-- <button @click="show">点击</button> -->
+
             </div>
         </div>
-        <LineUp :playingMassge="playingMassge" :newPlayList="newPlayList" :currTime="currTime" :songTime="songLength" v-show="isShowList" @sendId="getID" ref="childDom" @callHide="isShowList = false"/>
+        <LineUp :playingMassge="singleSongDetail" :newPlayList="playingTracks" :currTime="currTime" :songTime="songLength" v-show="isShowList" @sendId="getID" ref="childDom" @callHide="isShowList = false"/>
     </div>
 </template>
 
@@ -92,48 +96,26 @@ export default {
     computed:{
         
 
-        playId(){
+        
 
-            if(this.songUrlDetail[this.currentIndex]){
-                return this.songUrlDetail[this.currentIndex].data.data[0].id
-            }
-            return false
-        },
-
-        playingMassge(){
-            // console.log(this.playId)
-            if(this.playId){
-                let obj = {}
-                for(let i = 0;i<this.playingTracks.length;i++){
-                    if(this.playingTracks[i].id == this.playId){
-                        obj = this.playingTracks[i]
-                        break
-                    }
-                }
-                return obj
-            }
-            return false
-        },
-
+        // 当前播放的url
         songUrl(){
-            if(this.songUrlDetail[this.currentIndex]){
-                return this.songUrlDetail[this.currentIndex].data.data[0].url
+            if(this.playingTracks[this.currentIndex]){
+                return 'https://music.163.com/song/media/outer/url?id='+this.playingTracks[this.currentIndex].id
             }
             return false
         },
 
-        newPlayList(){
-            return this.playingTracks.filter((item)=>{
-                for(let i = 0;i<this.songUrlDetail.length;i++){
-                    if(this.songUrlDetail[i].data.data[0].id == item.id){
-                        return true
-                    }
-                }
-                return false
-            })
+        // 当前播放歌曲详情
+        singleSongDetail(){
+            if(this.playingTracks[this.currentIndex]){
+                return this.playingTracks[this.currentIndex]
+            }
+            return false
         },
 
-        ...mapState(['songUrlDetail','currSongId','playingTracks','isDoneList'])
+        // 当前播放列表详情playingTracks 
+        ...mapState(['currSongId','playingTracks','isDoneList'])
     },
 
     beforeDestroy(){
@@ -143,12 +125,10 @@ export default {
     methods:{
         // 从播放列表点击的歌曲id 更新当前播放index
         getID(id){
-            if(this.songUrlDetail){
-                for(let i = 0;i<this.songUrlDetail.length;i++){
-                    if(this.songUrlDetail[i].data.data[0].id == id){
-                        this.currentIndex = i
-                        break
-                    }
+             for(let i =0;i<this.playingTracks.length;i++){
+                if(this.playingTracks[i].id == id){
+                    this.currentIndex = i
+                    break
                 }
             }
         },
@@ -158,7 +138,7 @@ export default {
             // 显示播放列表和歌词
             this.isShowList = !this.isShowList
             // 更新歌词
-            this.getLyric(this.playingMassge.id)
+            this.getLyric(this.currSongId)
 
         },
 
@@ -169,7 +149,7 @@ export default {
 
         // 鼠标移动控制声量
         pressMoveYin(event){
-            // console.log(event.offsetX)
+
             let x = event.offsetX
             let length = this.$refs.yinBgBar.offsetWidth
 
@@ -183,7 +163,7 @@ export default {
         },
 
         show(){
-            console.log(this.$refs.audioExample.volume)
+
         },
 
         // 静音
@@ -276,7 +256,7 @@ export default {
                     
                 while(flag){
                     let oldValue = this.currentIndex
-                    this.currentIndex = Math.floor(Math.random()*this.songUrlDetail.length)
+                    this.currentIndex = Math.floor(Math.random()*this.playingTracks.length)
                     if(oldValue == this.currentIndex){
                         flag = true
                     }else{
@@ -286,7 +266,7 @@ export default {
             }else{
                 this.currentIndex--
                 if(this.currentIndex < 0){
-                    this.currentIndex = this.songUrlDetail.length -1
+                    this.currentIndex = this.playingTracks.length -1
                 }
             }
             this.isPlay = false
@@ -301,7 +281,7 @@ export default {
                     
                 while(flag){
                     let oldValue = this.currentIndex
-                    this.currentIndex = Math.floor(Math.random()*this.songUrlDetail.length)
+                    this.currentIndex = Math.floor(Math.random()*this.playingTracks.length)
                     if(oldValue == this.currentIndex){
                         flag = true
                     }else{
@@ -310,7 +290,7 @@ export default {
                 }
             }else{
                 this.currentIndex++
-                if(this.currentIndex > this.songUrlDetail.length){
+                if(this.currentIndex > this.playingTracks.length){
                     this.currentIndex = 0
                 }
             }
@@ -322,14 +302,14 @@ export default {
         // 更新index
         changIndex(){
 
-            if(this.songUrlDetail){
-                for(let i = 0;i<this.songUrlDetail.length;i++){
-                    if(this.songUrlDetail[i].data.data[0].id == this.currSongId){
-                        this.currentIndex = i
-                        break
-                    }
+            
+             for(let i =0;i<this.playingTracks.length;i++){
+                if(this.playingTracks[i].id == this.currSongId){
+                    this.currentIndex = i
+                    break
                 }
             }
+
 
         },
 
@@ -350,7 +330,7 @@ export default {
 
         // 音乐播放完毕
         endMusic(){
-            console.log('播放完毕')
+
         },
 
         // 点击单曲循环
@@ -378,7 +358,7 @@ export default {
                     
                     while(flag){
                         let oldValue = this.currentIndex
-                        this.currentIndex = Math.floor(Math.random()*this.songUrlDetail.length)
+                        this.currentIndex = Math.floor(Math.random()*this.playingTracks.length)
                         if(oldValue == this.currentIndex){
                             flag = true
                         }else{
