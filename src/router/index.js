@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
+
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -19,13 +21,32 @@ const routes = [
   {
     path: '/community',
     name: 'Community',
-    component: () => import('../views/Community.vue')
+    component: () => import('../views/Community.vue'),
+    children:[{
+      path: 'login',
+      name: 'Login',
+      props:true,
+      component: () => import('../views/Login.vue'),
+    }]
   },
 
   {
     path: '/songlist',
     name: 'SongList',
     component: () => import('../views/SongList.vue')
+  },
+
+  {
+    path: '/library',
+    name: 'Library',
+    props:true,
+    component: () => import('../views/Library.vue')
+  },
+
+  {
+    path: '/search',
+    name: 'Search',
+    component: () => import('../views/Search.vue')
   },
 
   

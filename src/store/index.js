@@ -49,7 +49,25 @@ export default new Vuex.Store({
     allList:'',
 
     // 发现歌单
-    discoverList:''
+    discoverList:'',
+
+    // 控制播放器是否隐藏
+    isShowPlayer:true,
+
+    // 用户cookie值
+    userCookie:'',
+
+    // 用户cookie值
+    userPlayList:'',
+
+    // 我喜欢的歌曲列表
+    loveSongList:'',
+
+    // 登录状态
+    isLogin:false,
+
+    // 搜索结果
+    searchResult:''
   },
   getters:{
     // 处理数组 只获取前12种榜单

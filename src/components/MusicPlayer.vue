@@ -1,5 +1,5 @@
 <template>
-    <div class="music-player" >
+    <div class="music-player" v-if="playingTracks.length != 0" ref="musicPlayer">
   
         <audio v-if="songUrl" :src="songUrl"   autoplay id="medicine"  @timeupdate="getTime" @ended="endSong" ref='audioExample' class="audio"></audio>
         <div class="view-play">
@@ -48,6 +48,7 @@
             </div>
         </div>
         <LineUp :playingMassge="singleSongDetail" :newPlayList="playingTracks" :currTime="currTime" :songTime="songLength" v-show="isShowList" @sendId="getID" ref="childDom" @callHide="isShowList = false"/>
+        <span class="press"  @click="changDownOrUp"></span>
     </div>
 </template>
 
@@ -68,7 +69,8 @@ export default {
             isMark:false,
             isYinMark:false,
             isQuite:false,
-            isShowList:false
+            isShowList:false,
+            isUp:true
         }
     },
 
@@ -123,6 +125,25 @@ export default {
     },
     
     methods:{
+        // 控制隐藏播放器
+        changDownOrUp(){
+            if(this.isUp){
+                this.downAction()
+            }else{
+                this.upAction()
+            }
+            this.isUp = !this.isUp
+        },
+        // 播放器上滑动动画
+        upAction(){
+            this.$refs.musicPlayer.style.bottom = '0px'
+        },
+
+        // 播放器下滑动动画
+        downAction(){
+            this.$refs.musicPlayer.style.bottom = '-66px'
+        },
+
         // 从播放列表点击的歌曲id 更新当前播放index
         getID(id){
              for(let i =0;i<this.playingTracks.length;i++){
@@ -395,7 +416,21 @@ export default {
         left: 0;
         right: 0;
         height: 64px;
+        transition: all .5s linear;
 
+        .press{
+            display: inline-block;
+            position: absolute;
+            right: 30px;
+            top: -24px;
+            font-size: 12px;
+            width: 30px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            background-color: skyblue;
+        }
+        
         #medicine{
             position: absolute;
             bottom: 0;

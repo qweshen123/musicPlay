@@ -26,9 +26,17 @@ let API = {
         // 热门歌单分类
         playListHot:baseUrl + '/playlist/hot',
         // 歌单精选 cat:(华语 catlist接口)对应 limit:50 offset order:new or hot
-        getPlayList:baseUrl+'/top/playlist'
+        getPlayList:baseUrl+'/top/playlist',
         // 手机登录 phone&password
-        
+        phoneLogin:baseUrl + '/login/cellphone',
+        // 用户详情 phone&password
+        userDetail:baseUrl + '/user/detail',
+        // 退出登录
+        out:baseUrl + '/logout',
+        // 获取用户歌单
+        userList:baseUrl + '/user/playlist',
+        // 获取用户歌单
+        searchDetail:baseUrl + '/cloudsearch'
 
     }
 }

@@ -105,6 +105,7 @@ export default {
 <style lang="scss" scoped>
     .explore{
       padding-top: 64px;
+      padding-bottom: 64px;
 
       .hot-tag{
         display: flex;

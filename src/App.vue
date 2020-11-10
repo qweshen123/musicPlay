@@ -14,12 +14,12 @@
           </div>
           <div class="search  col-md-5 col-sm-6 hidden-xs">
             <span class="icon-sousuo"></span>
-            <input type="text" v-model="keyWord">
+            <input type="text" v-model="keyWord" @keydown="words"/>
           </div>
         </div>
     </div>
     <keep-alive>
-      <router-view @call="callBack"/>
+      <router-view @call="callBack" @downMiusic="changDownMusic" @upMusic="changUpMusic"/>
     </keep-alive>
     <transition name="up"> 
       <MusicPlayer ref='child'/>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-// import {mapActions,mapState} from 'vuex'
+import {mapActions} from 'vuex'
 import MusicPlayer from './components/MusicPlayer'
 export default {
   data(){
@@ -43,7 +43,7 @@ export default {
   },
   methods:{
     show(){
-      console.log(this.recommend)
+  
     },
     toPrev(){
       this.$router.go(-1)
@@ -53,8 +53,30 @@ export default {
     },
     callBack(){
       this.$refs.child.changIndex()
-    }
-    // ...mapActions(['dataMusic'])
+    },
+
+    // 控制播放器下移
+    changDownMusic(){
+      this.$refs.child.downAction()
+    },
+
+    // 控制播放器上移
+    changUpMusic(){
+      this.$refs.child.upAction()
+    },
+
+    // 搜索
+    words(e){
+      let event = e || event
+      let code = event.keyCode || event.which || event.charCode;
+      if(code == 13){
+        this.search(this.keyWord)
+      }
+      
+    },
+
+
+    ...mapActions(['mapActions','search'])
   },
   mounted(){
     // this.dataMusic(15)

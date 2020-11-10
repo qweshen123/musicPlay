@@ -107,4 +107,34 @@ export default {
     [types.SET_ISDONELIST](state,data){
         state.isDoneList = data
     },
+
+    // 更改播放器的状态
+    [types.SET_SHOWPLAYER](state,data){
+        state.isShowPlayer = data
+    },
+
+    // 更改用户cookie的状态
+    [types.SET_USERCOOKIE](state,data){
+        state.userCookie = data
+    },
+
+    // 更改用户登录用户歌单
+    [types.SET_USERPLAYLIST](state,data){
+        state.userPlayList = data
+    },
+
+    // 我喜爱的音乐列表
+    [types.SET_LOVESONGLIST](state,data){
+        state.loveSongList = data
+    },
+
+    // 我喜爱的音乐列表
+    [types.IS_LOGIN](state,data){
+        state.isLogin = data
+    },
+
+    // 搜索结果
+    [types.SET_SEARCHRESULT](state,data){
+        state.searchResult = data
+    }
 }

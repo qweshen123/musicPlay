@@ -13,7 +13,7 @@
             <div class="song-title">
                 正在播放:{{playingMassge.name}}
             </div>
-            <div class="box" ref="lyricBox">
+            <div class="box" ref="lyricBox" v-if="arr">
                 <div class="song-lyric" ref="songBox">
                     <!-- <p v-for="(item,index) in arr" :key="index" :class="{active:curentIndex==index}">{{item.lyc}}</p> -->
                     <p v-if="arr[curentIndex-2]">{{arr[curentIndex-2].lyc}}</p>
@@ -21,6 +21,11 @@
                     <p v-if="arr[curentIndex]" class="active">{{arr[curentIndex].lyc}}</p>
                     <p v-if="arr[curentIndex+1]">{{arr[curentIndex+1].lyc}}</p>
                     <p v-if="arr[curentIndex+2]">{{arr[curentIndex+2].lyc}}</p>
+                </div>
+            </div>
+            <div class="box" ref="lyricBox" v-if="!arr">
+                <div class="song-lyric" ref="songBox">
+                    <p>暂无歌词</p>
                 </div>
             </div>
         </div>
@@ -105,28 +110,31 @@ export default {
     },
     computed:{
         arr(){
-            let arr = this.lyric.split(/\n/)
-            arr = arr.map(l=>{
-                /\[(\d+):(\d+\.\d+)\](.+)/.test(l)
-                return {
-                    time:parseInt(RegExp.$1) * 60 + parseFloat(RegExp.$2,),
-                    lyc:RegExp.$3
-                }
-            })
-            var res = [arr[0]];
-            for(var i=1; i<arr.length; i++){
-                var repeat = false;
-                for(var j=0; j<res.length; j++){
-                    if(arr[i].time === res[j].time){
-                        repeat = true;
-                        break;
+            if(this.lyric){
+                let arr = this.lyric.split(/\n/)
+                arr = arr.map(l=>{
+                    /\[(\d+):(\d+\.\d+)\](.+)/.test(l)
+                    return {
+                        time:parseInt(RegExp.$1) * 60 + parseFloat(RegExp.$2,),
+                        lyc:RegExp.$3
+                    }
+                })
+                var res = [arr[0]];
+                for(var i=1; i<arr.length; i++){
+                    var repeat = false;
+                    for(var j=0; j<res.length; j++){
+                        if(arr[i].time === res[j].time){
+                            repeat = true;
+                            break;
+                        }
+                    }
+                    if(!repeat){
+                        res.push(arr[i]);
                     }
                 }
-                if(!repeat){
-                    res.push(arr[i]);
-                }
+                return res;
             }
-            return res;
+            return false
         },
 
         
